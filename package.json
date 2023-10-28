@@ -1,0 +1,19 @@
+{
+  "name": "kamatari",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run index.ts --watch | pino-pretty"
+  },
+  "devDependencies": {
+    "bun-types": "^1.0.7",
+    "pino-pretty": "^10.2.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.13.0",
+    "pino": "^8.16.1"
+  }
+}
