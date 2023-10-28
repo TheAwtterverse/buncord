@@ -6,6 +6,11 @@ To install dependencies:
 bun install
 ```
 
+To set environment:
+```bash
+cp example.env.local .env.local && vi .env.local
+```
+
 To run:
 
 ```bash
