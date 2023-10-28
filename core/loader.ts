@@ -11,10 +11,10 @@ import type { Client } from 'discord.js';
  */
 export default async (path: string, client: Client) => {
     try {
-        const files: string[] = readdirSync(join(import.meta.dir, path)).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
+        const files: string[] = readdirSync(join(import.meta.dir, '..', path)).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
 
         for (const file of files) {
-            const { default: loadable } = await import(join(import.meta.dir, path, file));
+            const { default: loadable } = await import(join(import.meta.dir, '..', path, file));
             loadable(client);
         }
         logger.info(`✨ Loaded ${files.length} loadables from ${path}`);
