@@ -1,5 +1,4 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
-const logger = require('pino')();
 import loader from './core/loader';
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
