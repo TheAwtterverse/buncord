@@ -1,7 +1,14 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import loader from './core/loader';
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers
+    ]
+});
 
 // Load events ✨
 loader('events/', client);
