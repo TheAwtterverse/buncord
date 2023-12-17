@@ -11,21 +11,7 @@ export const Noodle = mongoose.model('Noodle', noodleSchema);
 const providerSchema = new mongoose.Schema(
     {
         name: { type: String, required: true },
-        endpoint: { type: String, required: true },
-        auth: { type: mongoose.Schema.Types.Mixed, required: false },
-        mapping: [{ noodle: { type: mongoose.Schema.Types.ObjectId, ref: 'Noodle' }, query: { type: String, required: true } }],
-        copyright: { type: String, required: false },
-    },
-    {
-        methods: {
-            generateUrl(noodle: Noodle & { _id: mongoose.Types.ObjectId }): string | null {
-                const mappingItem = this.mapping.find(m => m.noodle && m.noodle.equals(noodle._id));
-                if (mappingItem) {
-                    return `${this.endpoint}${mappingItem.query}`;
-                }
-                return null;
-            },
-        },
+        noodles: [{ type: noodleSchema, required: true }],
     }
 );
 export type Provider = mongoose.InferSchemaType<typeof providerSchema>;
@@ -40,16 +26,6 @@ const noodleStashSchema = new mongoose.Schema(
 );
 export type NoodleStash = mongoose.InferSchemaType<typeof noodleStashSchema>;
 export const NoodleStash = mongoose.model('NoodleStash', noodleStashSchema);
-
-const guildSetupSchema = new mongoose.Schema(
-    {
-        guild: { type: String, required: true },
-        channel: { type: String, required: true },
-        noodles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Noodle', required: true }],
-    }
-);
-export type GuildSetup = mongoose.InferSchemaType<typeof guildSetupSchema>;
-export const GuildSetup = mongoose.model('GuildSetup', guildSetupSchema);
 
 const scheduledNoodleSchema = new mongoose.Schema(
     {
