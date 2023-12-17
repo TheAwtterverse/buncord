@@ -1,8 +1,9 @@
 import * as mongoose from 'mongoose';
-import type { Client, Guild, Embed, GuildMember, EmbedBuilder } from 'discord.js';
+import type { Client, Guild, Embed, GuildMember, EmbedBuilder, User } from 'discord.js';
 import { Noodle, NoodleStash, Provider, GuildSetup } from './dailynoodle/schemas';
 import init from './dailynoodle/init';
 import embed from './dailynoodle/embed';
+import tinyfox from './dailynoodle/providers/tinyfox';
 
 await init();
 
@@ -27,14 +28,6 @@ export default async (client: Client) => {
         });
 
     });
-    const noodles = await Noodle.find();
-    const tinyfox = await Provider.findOne({ name: 'TinyFox' });
-    const otter = noodles.find(n => n.name === 'Otter');
-    console.log(await getAvailableNoodles());
-    if (otter)
-        console.log(tinyfox?.generateUrl(otter));
-    else
-        console.log('Otter not found');
 };
 
 export const getAvailableNoodles = async (): Promise<Noodle[]> => {
@@ -49,15 +42,10 @@ export const configureGuild = async (guild: Guild, channel: string, noodleNames:
     return setup!;
 }
 
-export const getNoodleEmbed = async (noodleName: string): Promise<EmbedBuilder> => {
+export const getNoodleEmbed = async (noodleName: string, user?: User): Promise<EmbedBuilder> => {
 
     const noodle = await Noodle.findOne({ name: noodleName });
     const provider = await Provider.findOne({ 'mapping.noodle': noodle?._id });
-    const getLink = provider?.generateUrl(noodle!);
-    const imageRes = await fetch(getLink!);
-    const image = await imageRes.json();
-    if (!image.hasOwnProperty('loc')) {
-        throw new Error('The "loc" attribute does not exist in the response');
-    }
-    return embed(botClient.user!, `https://tinyfox.dev${image.loc}`, 'TinyFox.dev');
+    const imgData = await tinyfox.generateUrl(noodleName);
+    return embed(user ? { name: user.displayName, iconURL: user.avatarURL() || undefined } : null, imgData.imageUrl, imgData.copyright);
 };
