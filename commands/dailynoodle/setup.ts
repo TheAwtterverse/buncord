@@ -1,6 +1,6 @@
 import { CommandInteraction, Client, ApplicationCommandType, PermissionFlagsBits, ApplicationCommandOptionType } from "discord.js";
 import { Command } from "../../types/command";
-import { configureGuild } from "../../mods/dailynoodle";
+import { configureScheduledNoodle } from "../../mods/dailynoodle";
 
 export default {
     name: "setupdailynoodle",
@@ -16,7 +16,7 @@ export default {
             required: true
         },
         {
-            name: "noodles",
+            name: "noodle",
             description: "The noodles to send",
             type: ApplicationCommandOptionType.String,
             required: true,
@@ -38,17 +38,22 @@ export default {
                     value: "Badger"
                 }
             ]
+        },
+        {
+            name: "hour",
+            description: "The hour to send the noodle (in 24-hour format)",
+            type: ApplicationCommandOptionType.Integer,
+            required: true,
         }
     ],
     run: async (client: Client, interaction: CommandInteraction) => {
-        const content = "Hello there!";
 
         await interaction.deferReply({ ephemeral: true });
 
-        const setup = await configureGuild(interaction.guild!, interaction.options.getChannel("channel")!.id, interaction.options.getString("noodles")!.split(","));
+        const setup = await configureScheduledNoodle(interaction.guild!, interaction.options.getChannel("channel")!.id, interaction.options.getString("noodle"), interaction.options.getInteger("hour")!);
 
         await interaction.editReply({
-            content
+            content: setup ? `The daily noodle has been set up for this server!` : `The daily noodle could not be set up for this server!`
         });
     }
 } as Command;

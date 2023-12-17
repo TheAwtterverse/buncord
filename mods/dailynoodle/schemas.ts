@@ -50,3 +50,14 @@ const guildSetupSchema = new mongoose.Schema(
 );
 export type GuildSetup = mongoose.InferSchemaType<typeof guildSetupSchema>;
 export const GuildSetup = mongoose.model('GuildSetup', guildSetupSchema);
+
+const scheduledNoodleSchema = new mongoose.Schema(
+    {
+        guild: { type: String, required: true },
+        channel: { type: String, required: true },
+        noodle: { type: noodleSchema, required: true },
+        hour: { type: Number, required: true }
+    }
+);
+export type ScheduledNoodle = mongoose.InferSchemaType<typeof scheduledNoodleSchema>;
+export const ScheduledNoodle = mongoose.model('ScheduledNoodle', scheduledNoodleSchema);

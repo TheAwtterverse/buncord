@@ -1,32 +1,33 @@
 import * as mongoose from 'mongoose';
 import type { Client, Guild, Embed, GuildMember, EmbedBuilder, User } from 'discord.js';
-import { Noodle, NoodleStash, Provider, GuildSetup } from './dailynoodle/schemas';
+import { Noodle, NoodleStash, Provider, GuildSetup, ScheduledNoodle } from './dailynoodle/schemas';
 import init from './dailynoodle/init';
 import embed from './dailynoodle/embed';
 import tinyfox from './dailynoodle/providers/tinyfox';
+import { CronJob } from 'cron';
 
 await init();
 
 await mongoose.connect('mongodb://127.0.0.1:27017/dailynoodle');
 
-let botClient: Client;
-
 export default async (client: Client) => {
 
     client.once('ready', async () => {
-        botClient = client;
-        const setups = await GuildSetup.find();
-        setups.forEach(async (setup) => {
-            if (!client.guilds.cache.has(setup.guild)) return;
 
-            const guild = client.guilds.cache.get(setup.guild)!;
-            const channel = guild.channels.cache.get(setup.channel);
-            if (channel && channel.isTextBased()) {
+        const sendNoods = new CronJob('0 * * * *', async () => {
+            const currentHour = new Date().getHours();
+            const scheduledNoodles = await ScheduledNoodle.find({ hour: currentHour });
+            scheduledNoodles.forEach(async (scheduledNoodle) => {
+                if (!client.guilds.cache.has(scheduledNoodle.guild)) return;
 
-                await channel.send({ embeds: [await getNoodleEmbed("Ferret")] });
-            }
-        });
+                const guild = client.guilds.cache.get(scheduledNoodle.guild)!;
+                const channel = guild.channels.cache.get(scheduledNoodle.channel);
+                if (channel && channel.isTextBased()) {
 
+                    await channel.send({ embeds: [await getNoodleEmbed(scheduledNoodle.noodle.name, client.user || undefined)] });
+                }
+            });
+        }, null, true);
     });
 };
 
@@ -49,3 +50,18 @@ export const getNoodleEmbed = async (noodleName: string, user?: User): Promise<E
     const imgData = await tinyfox.generateUrl(noodleName);
     return embed(user ? { name: user.displayName, iconURL: user.avatarURL() || undefined } : null, imgData.imageUrl, imgData.copyright);
 };
+
+/**
+ * Configures a noodle to be scheduled for a specific guild, channel, and hour.
+ *
+ * @param {Guild} guild - The guild where the noodle will be scheduled.
+ * @param {string} channel - The channel where the noodle will be posted.
+ * @param {string} noodleName - The name of the noodle to be scheduled.
+ * @param {number} hour - The hour when the noodle will be posted (in 24-hour format).
+ * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating whether the operation was successful.
+ */
+export const configureScheduledNoodle = async (guild: Guild, channel: string, noodleName: string, hour: number): Promise<boolean> => {
+    const noodle = await Noodle.findOne({ name: noodleName });
+    const setup = await ScheduledNoodle.findOneAndUpdate({ guild: guild.id, channel, hour }, { guild: guild.id, channel, hour, noodle }, { upsert: true, runValidators: true });
+    return !!setup;
+}

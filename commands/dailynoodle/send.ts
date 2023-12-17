@@ -36,7 +36,7 @@ export default {
     run: async (client: Client, interaction: CommandInteraction) => {
         await interaction.deferReply();
         await interaction.editReply({
-            embeds: [await getNoodleEmbed(interaction.options.getString("noodle") ?? "Otter")]
+            embeds: [await getNoodleEmbed(interaction.options.getString("noodle") ?? "Otter", interaction.user)]
         });
     }
 } as Command;
