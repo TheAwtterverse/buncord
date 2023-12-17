@@ -1,18 +1,18 @@
 import * as mongoose from 'mongoose';
 import type { Client, Guild, Embed, GuildMember, EmbedBuilder, User } from 'discord.js';
-import { Noodle, NoodleStash, Provider, GuildSetup, ScheduledNoodle } from './dailynoodle/schemas';
+import { Noodle, NoodleStash, Provider, ScheduledNoodle } from './dailynoodle/schemas';
 import init from './dailynoodle/init';
 import embed from './dailynoodle/embed';
 import tinyfox from './dailynoodle/providers/tinyfox';
 import { CronJob } from 'cron';
 
-await init();
-
-await mongoose.connect('mongodb://127.0.0.1:27017/dailynoodle');
+await mongoose.connect(process.env.MONGODB_URI || '');
 
 export default async (client: Client) => {
 
     client.once('ready', async () => {
+
+        await init();
 
         const sendNoods = new CronJob('0 * * * *', async () => {
             const currentHour = new Date().getHours();
@@ -37,16 +37,22 @@ export const getAvailableNoodles = async (): Promise<Noodle[]> => {
     return noodles;
 }
 
-export const configureGuild = async (guild: Guild, channel: string, noodleNames: string[]): Promise<GuildSetup> => {
-    const noodles = await Noodle.find({ name: { $in: noodleNames } });
-    const setup = await GuildSetup.findOneAndUpdate({ guild: guild.id }, { guild: guild.id, channel, noodles }, { upsert: true, runValidators: true });
-    return setup!;
-}
-
+/**
+ * Generates an embed for a noodle with a given name.
+ *
+ * @param {string} noodleName - The name of the noodle for which to generate an embed.
+ * @param {User} [user] - The discord user requesting the noodle embed. Optional.
+ * @returns {Promise<EmbedBuilder>} - A promise that resolves to an EmbedBuilder, which can be used to build the embed.
+ *
+ * @example
+ * // Generate an embed for a noodle named "Otter"
+ * getNoodleEmbed("Otter");
+ */
 export const getNoodleEmbed = async (noodleName: string, user?: User): Promise<EmbedBuilder> => {
 
     const noodle = await Noodle.findOne({ name: noodleName });
-    const provider = await Provider.findOne({ 'mapping.noodle': noodle?._id });
+    const provider = await Provider.findOne({ 'noodles._id': noodle?._id });
+    console.log(provider);
     const imgData = await tinyfox.generateUrl(noodleName);
     return embed(user ? { name: user.displayName, iconURL: user.avatarURL() || undefined } : null, imgData.imageUrl, imgData.copyright);
 };
