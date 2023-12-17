@@ -1,6 +1,6 @@
-import * as mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
+const logger = require('pino')().child({ module: 'DailyNoodle' });
 import { Noodle, Provider } from './schemas';
 import IProvider, { INoodleMapping } from './providers/provider';
 
@@ -15,15 +15,10 @@ export const loadProviders = (): IProvider[] => {
 };
 
 export default async () => {
-
-    await mongoose.connect(process.env.MONGODB_URI || '');
-
+    logger.info('Initializing Daily Noodle...');
     const providers = loadProviders();
-    console.log(providers);
     for (const provider of providers) {
-        console.log(provider.name);
         const noodles: Noodle[] = await Noodle.find({ name: { $in: provider.noodleMapping.map((mapping: INoodleMapping) => mapping.noodleName) } });
-
         await Provider.findOneAndUpdate({ name: provider.name }, { name: provider.name, noodles }, { upsert: true, runValidators: true });
     }
     ['Otter', 'Ferret', 'Marten', 'Badger'].map(async (name) => await Noodle.findOneAndUpdate({ name }, { name }, { upsert: true, runValidators: true }));

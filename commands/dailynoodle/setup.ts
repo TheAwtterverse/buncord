@@ -1,6 +1,6 @@
 import { CommandInteraction, Client, ApplicationCommandType, PermissionFlagsBits, ApplicationCommandOptionType } from "discord.js";
 import { Command } from "../../types/command";
-import { configureScheduledNoodle } from "../../mods/dailynoodle";
+import { configureScheduledNoodle } from "../../mods/dailynoodle/helpers";
 
 export default {
     name: "setupdailynoodle",

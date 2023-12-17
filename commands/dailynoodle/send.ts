@@ -1,6 +1,6 @@
 import { CommandInteraction, Client, ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
 import { Command } from "../../types/command";
-import { getNoodleEmbed } from "../../mods/dailynoodle";
+import { getNoodleEmbed } from "../../mods/dailynoodle/helpers";
 
 export default {
     name: "sendpic",
