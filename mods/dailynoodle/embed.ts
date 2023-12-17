@@ -1,9 +1,9 @@
-import { EmbedBuilder, User } from 'discord.js';
+import { EmbedBuilder, EmbedAuthorOptions } from 'discord.js';
 
-export default (me: User, imageUrl: string, copyright: string): EmbedBuilder => {
+export default (author: EmbedAuthorOptions | null, imageUrl: string, copyright: string): EmbedBuilder => {
     return new EmbedBuilder()
         .setTitle('Daily Noodle')
-        .setAuthor({ name: me.username, iconURL: me.avatarURL() || undefined })
+        .setAuthor(author)
         .setTimestamp()
         .setImage(imageUrl)
         .setFooter({ text: `Image via ${copyright}` });
