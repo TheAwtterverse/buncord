@@ -35,8 +35,15 @@ export default {
     ],
     run: async (client: Client, interaction: CommandInteraction) => {
         await interaction.deferReply();
-        await interaction.editReply({
-            embeds: [await getNoodleEmbed(interaction.options.getString("noodle") ?? "Otter", interaction.user)]
-        });
+        const embed = await getNoodleEmbed(interaction.options.getString("noodle") || "Otter", interaction.user);
+        if (embed) {
+            await interaction.editReply({
+                embeds: [embed]
+            });
+        } else {
+            await interaction.editReply({
+                content: "Something went wrong."
+            });
+        }
     }
 } as Command;
