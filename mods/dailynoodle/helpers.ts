@@ -30,8 +30,8 @@ export const connectDB = async () => {
  */
 export const getNoodleEmbed = async (noodleName: string, user?: User): Promise<EmbedBuilder> => {
 
-    const noodle = await Noodle.findOne({ name: noodleName });
-    const provider = await Provider.findOne({ 'noodles._id': noodle?._id });
+    //const noodle = await Noodle.findOne({ name: noodleName });
+    //const provider = await Provider.findOne({ 'noodles._id': noodle?._id });
     const imgData = await tinyfox.generateUrl(noodleName);
     return embed(user ? { name: user.displayName, iconURL: user.avatarURL() || undefined } : null, imgData.imageUrl, imgData.copyright);
 };

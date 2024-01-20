@@ -32,10 +32,6 @@ export default {
                 {
                     name: "Marten",
                     value: "Marten"
-                },
-                {
-                    name: "Badger",
-                    value: "Badger"
                 }
             ]
         },

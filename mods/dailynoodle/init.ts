@@ -21,6 +21,6 @@ export default async () => {
         const noodles: Noodle[] = await Noodle.find({ name: { $in: provider.noodleMapping.map((mapping: INoodleMapping) => mapping.noodleName) } });
         await Provider.findOneAndUpdate({ name: provider.name }, { name: provider.name, noodles }, { upsert: true, runValidators: true });
     }
-    ['Otter', 'Ferret', 'Marten', 'Badger'].map(async (name) => await Noodle.findOneAndUpdate({ name }, { name }, { upsert: true, runValidators: true }));
-
+    ['Otter', 'Ferret', 'Marten'].map(async (name) => await Noodle.findOneAndUpdate({ name }, { name }, { upsert: true, runValidators: true }));
+    logger.info('Daily Noodle initialized!');
 };

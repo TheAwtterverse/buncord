@@ -14,7 +14,7 @@ export default {
         }
 
         return {
-            imageUrl: `https://tinyfox.dev${image.loc}`,
+            imageUrl: `https://api.tinyfox.dev${image.loc}`,
             copyright: 'tinyfox.dev'
         }
     },
