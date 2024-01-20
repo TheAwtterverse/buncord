@@ -14,8 +14,8 @@ services:
         max-size: '200k'
         max-file: '8'
     volumes:
-      - type: bind
-        source: ./data
-        target: /usr/src/app/data
+    - type: bind
+      source: ./data
+      target: /usr/src/app/data
     env_file:
-      - ./redux.env
+    - ./.env.local
