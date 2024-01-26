@@ -6,7 +6,7 @@ export default (client: Client) => {
     client.once(Events.ClientReady, () => {
         if (!client.user || !client.application) return;
 
-        logger.info(`🚀 ${client.user.username} is online!`)
+        logger.info(`🚀 ${client.user.username} is online !`)
         CommandHandler.init(client);
     });
 };
